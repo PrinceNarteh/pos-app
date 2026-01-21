@@ -23,8 +23,8 @@ func initConfig() *Config {
 		},
 		DB: dbConfig{
 			URI:          getEnv("DB_URI", ""),
-			MaxOpenConns: getEnvAsInt("MAX_OPEN_CONNS", 10),
-			MaxIdleConns: getEnvAsInt("MAX_IDLE_CONNS", 10),
+			MaxOpenConns: int32(getEnvAsInt("DB_MAX_OPEN_CONNS", 10)),
+			MinOpenConns: int32(getEnvAsInt("DB_MAX_IDLE_CONNS", 10)),
 			MaxIdleTime:  getEnv("MAX_IDLE_TIME", "10m"),
 		},
 	}

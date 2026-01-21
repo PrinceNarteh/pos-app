@@ -13,7 +13,7 @@ type appConfig struct {
 
 type dbConfig struct {
 	URI          string
-	MaxOpenConns int
-	MaxIdleConns int
+	MaxOpenConns int32
+	MinOpenConns int32
 	MaxIdleTime  string
 }
