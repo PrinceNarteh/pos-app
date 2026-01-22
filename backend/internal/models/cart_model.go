@@ -7,12 +7,12 @@ import (
 
 type Cart struct {
 	ID          int     `json:"id"`
+	ProductID   int     `json:"productId"`
 	ProductName string  `json:"productName"`
 	Price       float64 `json:"price"`
 	Qty         int     `json:"qty"`
 	TotalPrice  float64 `json:"totalPrice"`
 	Note        string  `json:"note"`
-	ProductID   int     `json:"productId"`
 	UserID      int     `json:"userId"`
 }
 
