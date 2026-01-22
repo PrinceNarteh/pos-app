@@ -8,10 +8,7 @@ CREATE TABLE IF NOT EXISTS order_details (
   qty INT NOT NULL,
   total_price DECIMAL(10,2) NOT NULL,
   note TEXT,
-  order_id INT NOT NULL,
-
-  FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE
-  FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE,
+  order_id INT NOT NULL
 )
 -- +goose StatementEnd
 
