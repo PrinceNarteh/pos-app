@@ -1,9 +1,9 @@
 -- Cart
-CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-CONSTRAINT fk_cart_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+CONSTRAINT fk_carts_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+CONSTRAINT fk_carts_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 
 -- Orders
-CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(id)
+CONSTRAINT fk_orders_user FOREIGN KEY (user_id) REFERENCES users(id)
 
 -- Order Details
 CONSTRAINT fk_order_detail_order FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE
@@ -27,3 +27,4 @@ CONSTRAINT fk_purchase_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE 
 -- Purchase Details
 CONSTRAINT fk_purchase_detail_purchase FOREIGN KEY(purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
 CONSTRAINT fk_purchase_detail_product FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE
+
