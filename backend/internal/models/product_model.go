@@ -8,20 +8,22 @@ import (
 )
 
 type Product struct {
-	ID           int           `json:"id"`
-	Code         string        `json:"code"`
-	BarCode      string        `json:"barCode"`
-	Name         string        `json:"name"`
-	Image        string        `json:"image"`
-	URL          string        `json:"url"`
-	Qty          int           `json:"qty"`
-	Price        float64       `json:"price"`
-	CategoryID   int           `json:"categoryId"`
-	SupplierID   int           `json:"supplierId"`
-	Carts        []Cart        `json:"carts"`
-	OrderDetails []OrderDetail `json:"orderDetails"`
-	CreatedAt    time.Time     `json:"createdAt"`
-	UpdatedAt    time.Time     `json:"updatedAt"`
+	ID                 int                 `json:"id"`
+	Code               string              `json:"code"`
+	BarCode            string              `json:"barCode"`
+	Name               string              `json:"name"`
+	Image              string              `json:"image"`
+	URL                string              `json:"url"`
+	Qty                int                 `json:"qty"`
+	Price              float64             `json:"price"`
+	CategoryID         int                 `json:"categoryId"`
+	SupplierID         int                 `json:"supplierId"`
+	Carts              []Cart              `json:"carts"`
+	OrderDetails       []OrderDetail       `json:"orderDetails"`
+	OrderReturnDetails []OrderReturnDetail `json:"orderReturnDetails"`
+	PurchaseDetails    []PurchaseDetail    `json:"purchaseDetails"`
+	CreatedAt          time.Time           `json:"createdAt"`
+	UpdatedAt          time.Time           `json:"updatedAt"`
 }
 
 type CreateProductDTO struct {
