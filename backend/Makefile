@@ -11,3 +11,7 @@ create-migration:
 .PHONY: migration-up
 migration-up:
 	goose up
+
+.PHONY: migration-down
+migration-down:
+	goose down
