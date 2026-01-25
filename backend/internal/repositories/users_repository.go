@@ -15,6 +15,7 @@ type UserRepository interface {
 	FindByID(context.Context, int) (*models.User, error)
 	FindByEmail(context.Context, string) (*models.User, error)
 	FindByUsername(context.Context, string) (*models.User, error)
+	Create(context.Context, models.CreateUserDTO) (*models.User, error)
 	Delete(context.Context, int) error
 }
 
@@ -91,6 +92,37 @@ func (u *userRepository) FindAll(ctx context.Context) ([]models.User, error) {
 	return users, nil
 }
 
+func (u *userRepository) Create(ctx context.Context, dto models.CreateUserDTO) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	sql := `
+		INSERT INTO users (name, username, email, password, role)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, name, username, email, password, role
+	`
+
+	user := new(models.User)
+	if err := u.pool.QueryRow(ctx, sql,
+		dto.Name,
+		dto.Username,
+		dto.Email,
+		dto.Password,
+		dto.Role,
+	).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Username,
+		&user.Email,
+		&user.Password,
+		&user.Role,
+	); err != nil {
+		return nil, fmt.Errorf("error creating user: %w", err)
+	}
+
+	return user, nil
+}
+
 func (u *userRepository) Delete(ctx context.Context, id int) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
@@ -99,7 +131,14 @@ func (u *userRepository) Delete(ctx context.Context, id int) error {
 		DELETE FROM users WHERE id = $1
 	`
 
-	u.pool.
+	res, err := u.pool.Exec(ctx, sql, id)
+	if err != nil {
+		return fmt.Errorf("error deleting user: %w", err)
+	}
+
+	if res.RowsAffected() == 0 {
+		return fmt.Errorf("no user found with id %d", id)
+	}
 
 	return nil
 }

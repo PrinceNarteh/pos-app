@@ -9,8 +9,10 @@ import (
 
 var QueryTimeoutDuration = time.Second * 5
 
-type Repo struct{}
+type Repositories struct {
+	User UserRepository
+}
 
-func NewRepo(db *pgxpool.Pool) *Repo {
-	return &Repo{}
+func NewRepo(db *pgxpool.Pool) *Repositories {
+	return &Repositories{}
 }
