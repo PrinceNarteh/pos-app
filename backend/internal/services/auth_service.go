@@ -8,20 +8,19 @@ import (
 	"github.com/PrinceNarteh/pos/internal/repositories"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/gohugoio/hugo/tpl/fmt"
 )
 
 var _ AuthService = (*authService)(nil)
 
 type AuthService interface {
-	Login(context.Context, models.LoginDTO) (*models.UserResponse, error)
+	Login(context.Context, *models.LoginDTO) (*models.UserResponse, error)
 }
 
 type authService struct {
 	repo *repositories.Repositories
 }
 
-func (s *authService) Login(ctx context.Context, loginDTO models.LoginDTO) (*models.UserResponse, error) {
+func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*models.UserResponse, error) {
 	user := new(models.User)
 
 	err := validation.Validate(loginDTO.UsernameOrEmail, is.Email)
