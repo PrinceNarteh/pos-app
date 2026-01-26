@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/PrinceNarteh/pos/internal/models"
@@ -53,8 +52,6 @@ func (h *authHandler) Register(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-
-	fmt.Println(registerDTO)
 
 	if err := registerDTO.Validate(); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{

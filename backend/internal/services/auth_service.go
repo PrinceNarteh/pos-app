@@ -2,6 +2,8 @@ package services
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/models"
@@ -61,20 +63,21 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 }
 
 func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserResponse, error) {
-	user, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
-	if err != nil {
+	userExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
+	if !errors.Is(err, sql.ErrNoRows) {
 		return &models.UserResponse{}, fmt.Errorf("error retrieving user: %w", err)
 	}
-	if err == nil {
+	if userExists != nil {
 		return &models.UserResponse{}, fmt.Errorf("user with email %q already exists", registerDTO.Email)
 	}
-	hashedPassword, err := utils.GenerateToken(user)
+
+	hashedPassword, err := utils.Hash(registerDTO.Password)
 	if err != nil {
 		return &models.UserResponse{}, err
 	}
 
-	user.Password = hashedPassword
-	userResponse, err := s.repo.User.Create(ctx, user)
+	registerDTO.Password = hashedPassword
+	userResponse, err := s.repo.User.Create(ctx, registerDTO)
 	if err != nil {
 		return &models.UserResponse{}, err
 	}

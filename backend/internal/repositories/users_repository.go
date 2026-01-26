@@ -15,7 +15,7 @@ type UserRepository interface {
 	FindByID(context.Context, int) (*models.User, error)
 	FindByEmail(context.Context, string) (*models.User, error)
 	FindByUsername(context.Context, string) (*models.User, error)
-	Create(context.Context, models.CreateUserDTO) (*models.User, error)
+	Create(context.Context, *models.RegisterUserDTO) (*models.User, error)
 	Delete(context.Context, int) error
 }
 
@@ -92,7 +92,7 @@ func (u *userRepository) FindAll(ctx context.Context) ([]models.User, error) {
 	return users, nil
 }
 
-func (u *userRepository) Create(ctx context.Context, dto models.CreateUserDTO) (*models.User, error) {
+func (u *userRepository) Create(ctx context.Context, dto *models.RegisterUserDTO) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
