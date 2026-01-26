@@ -13,6 +13,8 @@ type Repositories struct {
 	User UserRepository
 }
 
-func NewRepo(db *pgxpool.Pool) *Repositories {
-	return &Repositories{}
+func NewRepo(connPool *pgxpool.Pool) *Repositories {
+	return &Repositories{
+		User: &userRepository{pool: connPool},
+	}
 }

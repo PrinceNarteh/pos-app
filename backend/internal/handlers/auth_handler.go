@@ -36,7 +36,7 @@ func (h *authHandler) Login(c *fiber.Ctx) error {
 	userResponse, err := h.Services.Auth.Login(c.Context(), reqBody)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
