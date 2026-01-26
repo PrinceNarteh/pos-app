@@ -22,7 +22,8 @@ func main() {
 	repo := repositories.NewRepo(connPool)
 	svc := services.NewServices(repo)
 	handlers := handlers.NewHandlers(svc)
-	NewRoutes(handlers).initRoutes(app)
+	api := app.Group("/api")
+	NewRoutes(handlers).initRoutes(api)
 
 	log.Fatal(app.Listen(config.Env.APP.Port))
 }

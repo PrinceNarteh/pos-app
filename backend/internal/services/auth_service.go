@@ -15,6 +15,7 @@ var _ AuthService = (*authService)(nil)
 
 type AuthService interface {
 	Login(context.Context, *models.LoginDTO) (*models.UserResponse, error)
+	Register(context.Context, *models.RegisterUserDTO) (*models.UserResponse, error)
 }
 
 type authService struct {
@@ -42,14 +43,47 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 		return &models.UserResponse{}, fmt.Errorf(errMsg)
 	}
 
+	token, err := utils.GenerateToken(user)
+	if err != nil {
+		return &models.UserResponse{}, fmt.Errorf("error: %w", err)
+	}
+
 	userResponse := &models.UserResponse{
 		ID:       user.ID,
 		Name:     user.Name,
 		Email:    user.Email,
 		Username: user.Username,
 		Role:     user.Role,
-		Token:    "",
+		Token:    token,
 	}
 
 	return userResponse, nil
+}
+
+func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserResponse, error) {
+	user, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
+	if err != nil {
+		return &models.UserResponse{}, fmt.Errorf("error retrieving user: %w", err)
+	}
+	if err == nil {
+		return &models.UserResponse{}, fmt.Errorf("user with email %q already exists", registerDTO.Email)
+	}
+	hashedPassword, err := utils.GenerateToken(user)
+	if err != nil {
+		return &models.UserResponse{}, err
+	}
+
+	user.Password = hashedPassword
+	userResponse, err := s.repo.User.Create(ctx, user)
+	if err != nil {
+		return &models.UserResponse{}, err
+	}
+
+	return &models.UserResponse{
+		ID:       userResponse.ID,
+		Email:    userResponse.Email,
+		Username: userResponse.Username,
+		Name:     userResponse.Name,
+		Role:     userResponse.Role,
+	}, nil
 }

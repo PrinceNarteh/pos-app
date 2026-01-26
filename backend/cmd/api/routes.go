@@ -15,7 +15,7 @@ func NewRoutes(handlers *handlers.Handlers) *routes {
 	}
 }
 
-func (r *routes) initRoutes(app *fiber.App) {
+func (r *routes) initRoutes(app fiber.Router) {
 	auth := app.Group("/auth")
 	auth.Post("/login", r.Handlers.Auth.Login)
 	auth.Post("/register", r.Handlers.Auth.Register)
