@@ -16,7 +16,7 @@ type AuthHandler interface {
 }
 
 type authHandler struct {
-	Services *services.Services
+	svc *services.Services
 }
 
 func (h *authHandler) Login(c *fiber.Ctx) error {
@@ -33,7 +33,7 @@ func (h *authHandler) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	userResponse, err := h.Services.Auth.Login(c.Context(), reqBody)
+	userResponse, err := h.svc.Auth.Login(c.Context(), reqBody)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
@@ -59,7 +59,7 @@ func (h *authHandler) Register(c *fiber.Ctx) error {
 		})
 	}
 
-	userResponse, err := h.Services.Auth.Register(c.Context(), registerDTO)
+	userResponse, err := h.svc.Auth.Register(c.Context(), registerDTO)
 	if err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),

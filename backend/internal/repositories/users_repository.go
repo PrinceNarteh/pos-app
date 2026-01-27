@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -12,6 +13,7 @@ import (
 
 var (
 	_                    UserRepository = (*userRepository)(nil)
+	ErrNotFound                         = errors.New("user not found")
 	ErrDuplicateEmail                   = errors.New("a user with this email already exists")
 	ErrDuplicateUsername                = errors.New("a user with this username already exists")
 )
@@ -29,12 +31,12 @@ type userRepository struct {
 	pool *pgxpool.Pool
 }
 
-func (u *userRepository) findBy(ctx context.Context, sql string, args ...any) (*models.User, error) {
+func (u *userRepository) findBy(ctx context.Context, query string, args ...any) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
 	user := new(models.User)
-	if err := u.pool.QueryRow(ctx, sql, args...).
+	if err := u.pool.QueryRow(ctx, query, args...).
 		Scan(
 			&user.ID,
 			&user.Name,
@@ -43,6 +45,9 @@ func (u *userRepository) findBy(ctx context.Context, sql string, args ...any) (*
 			&user.Password,
 			&user.Role,
 		); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
 		return nil, err
 	}
 

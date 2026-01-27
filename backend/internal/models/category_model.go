@@ -4,9 +4,9 @@ package models
 import validation "github.com/go-ozzo/ozzo-validation"
 
 type Category struct {
-	ID       int       `json:"id"`
-	Name     string    `json:"name"`
-	Products []Product `json:"products"`
+	ID       int                    `json:"id"`
+	Name     string                 `json:"name"`
+	Products NullableSlice[Product] `json:"products"`
 }
 
 type CreateCategoryDTO struct {

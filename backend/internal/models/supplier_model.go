@@ -8,13 +8,13 @@ import (
 )
 
 type Supplier struct {
-	ID        int       `json:"id"`
-	FirstName string    `json:"firstName"`
-	LastName  string    `json:"lastName"`
-	Phone     string    `json:"phone"`
-	Email     string    `json:"email"`
-	Address   string    `json:"address"`
-	Products  []Product `json:"products"`
+	ID        int                    `json:"id"`
+	FirstName string                 `json:"firstName"`
+	LastName  string                 `json:"lastName"`
+	Phone     string                 `json:"phone"`
+	Email     string                 `json:"email"`
+	Address   string                 `json:"address"`
+	Products  NullableSlice[Product] `json:"products"`
 }
 
 type CreateSupplierDTO struct {

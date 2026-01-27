@@ -3,14 +3,14 @@ package models
 import "time"
 
 type Order struct {
-	ID           int           `json:"id"`
-	Code         string        `json:"code"`
-	Total        int64         `json:"total"`
-	PPN          int64         `json:"ppn"`
-	GrandTotal   int64         `json:"grandTotal"`
-	UserID       int           `json:"userId"`
-	OrderDetails []OrderDetail `json:"orderDetails"`
-	OrderReturns []OrderReturn `json:"orderReturns"`
+	ID           int                        `json:"id"`
+	Code         string                     `json:"code"`
+	Total        int64                      `json:"total"`
+	PPN          int64                      `json:"ppn"`
+	GrandTotal   int64                      `json:"grandTotal"`
+	UserID       int                        `json:"userId"`
+	OrderDetails NullableSlice[OrderDetail] `json:"orderDetails"`
+	OrderReturns NullableSlice[OrderReturn] `json:"orderReturns"`
 }
 
 type OrderDetail struct {

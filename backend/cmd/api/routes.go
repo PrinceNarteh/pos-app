@@ -19,4 +19,7 @@ func (r *routes) initRoutes(app fiber.Router) {
 	auth := app.Group("/auth")
 	auth.Post("/login", r.Handlers.Auth.Login)
 	auth.Post("/register", r.Handlers.Auth.Register)
+
+	user := app.Group("/users")
+	user.Get("/:id", r.Handlers.User.FindByID)
 }
