@@ -2,13 +2,19 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/models"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var _ UserRepository = (*userRepository)(nil)
+var (
+	_                    UserRepository = (*userRepository)(nil)
+	ErrDuplicateEmail                   = errors.New("a user with this email already exists")
+	ErrDuplicateUsername                = errors.New("a user with this username already exists")
+)
 
 type UserRepository interface {
 	FindAll(context.Context) ([]models.User, error)
@@ -23,21 +29,16 @@ type userRepository struct {
 	pool *pgxpool.Pool
 }
 
-func (u *userRepository) findBy(ctx context.Context, key, value any) (*models.User, error) {
+func (u *userRepository) findBy(ctx context.Context, sql string, args ...any) (*models.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	sql := `
-		SELECT id, name, username, email, password, role
-		FROM users
-		WHERE $1 = $2
-	`
-
 	user := new(models.User)
-	if err := u.pool.QueryRow(ctx, sql, key, value).
+	if err := u.pool.QueryRow(ctx, sql, args...).
 		Scan(
 			&user.ID,
 			&user.Name,
+			&user.Username,
 			&user.Email,
 			&user.Password,
 			&user.Role,
@@ -49,15 +50,30 @@ func (u *userRepository) findBy(ctx context.Context, key, value any) (*models.Us
 }
 
 func (u *userRepository) FindByID(ctx context.Context, id int) (*models.User, error) {
-	return u.findBy(ctx, "id", id)
+	sql := `
+		SELECT id, name, username, email, password, role
+		FROM users
+		WHERE id = $1
+	`
+	return u.findBy(ctx, sql, id)
 }
 
 func (u *userRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	return u.findBy(ctx, "email", email)
+	sql := `
+		SELECT id, name, username, email, password, role
+		FROM users
+		WHERE email = $1
+	`
+	return u.findBy(ctx, sql, email)
 }
 
 func (u *userRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
-	return u.findBy(ctx, "username", username)
+	sql := `
+		SELECT id, name, username, email, password, role
+		FROM users
+		WHERE username = $1
+	`
+	return u.findBy(ctx, sql, username)
 }
 
 func (u *userRepository) FindAll(ctx context.Context) ([]models.User, error) {
@@ -117,6 +133,17 @@ func (u *userRepository) Create(ctx context.Context, dto *models.RegisterUserDTO
 		&user.Password,
 		&user.Role,
 	); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" { // unique_violation
+				if pgErr.ConstraintName == "users_email_key" {
+					return nil, ErrDuplicateEmail
+				}
+				if pgErr.ConstraintName == "users_username_key" {
+					return nil, ErrDuplicateUsername
+				}
+			}
+		}
 		return nil, fmt.Errorf("error creating user: %w", err)
 	}
 

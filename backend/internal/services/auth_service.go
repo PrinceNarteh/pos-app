@@ -63,12 +63,20 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 }
 
 func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserResponse, error) {
-	userExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
-	if !errors.Is(err, sql.ErrNoRows) {
-		return &models.UserResponse{}, fmt.Errorf("error retrieving user: %w", err)
+	emailExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return &models.UserResponse{}, err
 	}
-	if userExists != nil {
-		return &models.UserResponse{}, fmt.Errorf("user with email %q already exists", registerDTO.Email)
+	if emailExists != nil {
+		return &models.UserResponse{}, fmt.Errorf("user with email %q exists", registerDTO.Email)
+	}
+
+	usernameExists, err := s.repo.User.FindByUsername(ctx, registerDTO.Email)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return &models.UserResponse{}, err
+	}
+	if usernameExists != nil {
+		return &models.UserResponse{}, fmt.Errorf("user with username %q exists", registerDTO.Email)
 	}
 
 	hashedPassword, err := utils.Hash(registerDTO.Password)
