@@ -29,8 +29,8 @@ type fileConfig struct {
 }
 
 type jwtConfig struct {
-	Secret           string
-	ExpiresIn        string
-	RefreshSecret    string
-	RefreshExpiresIn string
+	AccessSecret          string
+	AccessExpirationTime  string
+	RefreshSecret         string
+	RefreshExpirationTime string
 }

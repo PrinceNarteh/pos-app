@@ -30,13 +30,13 @@ func initConfig() *Config {
 		},
 		Jwt: jwtConfig{
 			Secret:           getEnv("JWT_SECRET", ""),
-			ExpiresIn:        getEnv("JWT_EXPIRES_IN", "100s"),
+			ExpiresIn:        getEnvAsInt("JWT_EXPIRES_IN", 100),
 			RefreshSecret:    getEnv("JWT_REFRESH_SECRET", ""),
-			RefreshExpiresIn: getEnv("JWT_REFRESH_EXPIRES_IN", "3600s"),
+			RefreshExpiresIn: getEnvAsInt("JWT_REFRESH_EXPIRES_IN", 3600),
 		},
 		File: fileConfig{
 			UploadPath:   getEnv("FILE_UPLOAD_PATH", ""),
-			MaxSize:      getEnvAsInt("FILE_MAX_SIZE", "5242880"),
+			MaxSize:      getEnvAsInt("FILE_MAX_SIZE", 5242880),
 			ErrorMessage: getEnv("FILE_MAX_MESSAGE", "File size must be less that 5MB"),
 			AllowedFiles: getEnv("FILE_ALLOWED_TYPES", ""),
 		},
