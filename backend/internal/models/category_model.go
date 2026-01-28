@@ -15,6 +15,6 @@ type CreateCategoryDTO struct {
 
 func (c CreateCategoryDTO) Validate() error {
 	return validation.ValidateStruct(&c,
-		validation.Field(&c.Name, validation.Required),
+		validation.Field(&c.Name, validation.Required, validation.Length(1, 100)),
 	)
 }

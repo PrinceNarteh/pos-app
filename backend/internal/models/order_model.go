@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	validation "github.com/go-ozzo/ozzo-validation"
+)
 
 type Order struct {
 	ID           int                        `json:"id"`
@@ -11,6 +15,16 @@ type Order struct {
 	UserID       int                        `json:"userId"`
 	OrderDetails NullableSlice[OrderDetail] `json:"orderDetails"`
 	OrderReturns NullableSlice[OrderReturn] `json:"orderReturns"`
+}
+
+func (o Order) Validate() error {
+	return validation.ValidateStruct(&o,
+		validation.Field(&o.Code, validation.Required, validation.Length(1, 100)),
+		validation.Field(&o.Total, validation.Required, validation.Min(0)),
+		validation.Field(&o.PPN, validation.Required, validation.Min(0)),
+		validation.Field(&o.GrandTotal, validation.Required, validation.Min(0)),
+		validation.Field(&o.UserID, validation.Required, validation.Min(1)),
+	)
 }
 
 type OrderDetail struct {
@@ -24,6 +38,17 @@ type OrderDetail struct {
 	OrderID     int     `json:"orderId"`
 }
 
+func (od OrderDetail) Validate() error {
+	return validation.ValidateStruct(&od,
+		validation.Field(&od.ProductName, validation.Required, validation.Length(1, 200)),
+		validation.Field(&od.Price, validation.Required, validation.Min(0.01)),
+		validation.Field(&od.Qty, validation.Required, validation.Min(1)),
+		validation.Field(&od.TotalPrice, validation.Required, validation.Min(0.01)),
+		validation.Field(&od.ProductID, validation.Required, validation.Min(1)),
+		validation.Field(&od.OrderID, validation.Required, validation.Min(1)),
+	)
+}
+
 type OrderReturn struct {
 	ID                 int                 `json:"id"`
 	Code               string              `json:"code"`
@@ -34,6 +59,15 @@ type OrderReturn struct {
 	OrderReturnDetails []OrderReturnDetail `json:"orderReturnDetails"`
 }
 
+func (or OrderReturn) Validate() error {
+	return validation.ValidateStruct(&or,
+		validation.Field(&or.Code, validation.Required, validation.Length(1, 100)),
+		validation.Field(&or.Note, validation.Length(0, 500)),
+		validation.Field(&or.OrderID, validation.Required, validation.Min(1)),
+		validation.Field(&or.UserID, validation.Required, validation.Min(1)),
+	)
+}
+
 type OrderReturnDetail struct {
 	ID            int     `json:"id"`
 	ProductID     int     `json:"productId"`
@@ -42,4 +76,15 @@ type OrderReturnDetail struct {
 	Qty           int     `json:"qty"`
 	TotalPrice    float64 `json:"totalPrice"`
 	OrderReturnID int     `json:"orderReturnId"`
+}
+
+func (ord OrderReturnDetail) Validate() error {
+	return validation.ValidateStruct(&ord,
+		validation.Field(&ord.ProductName, validation.Required, validation.Length(1, 200)),
+		validation.Field(&ord.Price, validation.Required, validation.Min(0.01)),
+		validation.Field(&ord.Qty, validation.Required, validation.Min(1)),
+		validation.Field(&ord.TotalPrice, validation.Required, validation.Min(0.01)),
+		validation.Field(&ord.ProductID, validation.Required, validation.Min(1)),
+		validation.Field(&ord.OrderReturnID, validation.Required, validation.Min(1)),
+	)
 }
