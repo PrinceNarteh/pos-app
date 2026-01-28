@@ -17,15 +17,28 @@ func initConfig() *Config {
 	}
 
 	return &Config{
-		APP: appConfig{
-			Port: fmt.Sprintf(":%s", getEnv("APP_PORT", "3000")),
-			Env:  getEnv("APP_ENV", "development"),
+		App: appConfig{
+			Port:    fmt.Sprintf(":%s", getEnv("APP_PORT", "3000")),
+			Env:     getEnv("APP_ENV", "development"),
+			Version: getEnv("APP_VERSION", "1.0.0"),
 		},
 		DB: dbConfig{
 			URI:          getEnv("DB_URI", ""),
 			MaxOpenConns: int32(getEnvAsInt("DB_MAX_OPEN_CONNS", 10)),
 			MinOpenConns: int32(getEnvAsInt("DB_MAX_IDLE_CONNS", 10)),
 			MaxIdleTime:  getEnv("MAX_IDLE_TIME", "10m"),
+		},
+		Jwt: jwtConfig{
+			Secret:           getEnv("JWT_SECRET", ""),
+			ExpiresIn:        getEnv("JWT_EXPIRES_IN", "100s"),
+			RefreshSecret:    getEnv("JWT_REFRESH_SECRET", ""),
+			RefreshExpiresIn: getEnv("JWT_REFRESH_EXPIRES_IN", "3600s"),
+		},
+		File: fileConfig{
+			UploadPath:   getEnv("FILE_UPLOAD_PATH", ""),
+			MaxSize:      getEnvAsInt("FILE_MAX_SIZE", "5242880"),
+			ErrorMessage: getEnv("FILE_MAX_MESSAGE", "File size must be less that 5MB"),
+			AllowedFiles: getEnv("FILE_ALLOWED_TYPES", ""),
 		},
 	}
 }

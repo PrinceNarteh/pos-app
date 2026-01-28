@@ -25,5 +25,5 @@ func main() {
 	api := app.Group("/api")
 	NewRoutes(handlers).initRoutes(api)
 
-	log.Fatal(app.Listen(config.Env.APP.Port))
+	log.Fatal(app.Listen(config.Env.App.Port))
 }
