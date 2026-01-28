@@ -45,7 +45,7 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 		return &models.UserResponse{}, fmt.Errorf(errMsg)
 	}
 
-	token, err := utils.GenerateToken(user)
+	token, err := utils.GenerateAccessToken(user)
 	if err != nil {
 		return &models.UserResponse{}, fmt.Errorf("error: %w", err)
 	}

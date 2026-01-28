@@ -14,5 +14,12 @@ func createServer() *fiber.App {
 		BodyLimit:    config.Env.File.MaxSize,
 	})
 
+	// app.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     "*",
+	// 	AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+	// 	AllowMethods:     "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+	// 	AllowCredentials: true,
+	// }))
+
 	return app
 }

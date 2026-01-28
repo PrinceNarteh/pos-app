@@ -13,7 +13,6 @@ import (
 
 var (
 	_                    UserRepository = (*userRepository)(nil)
-	ErrNotFound                         = errors.New("user not found")
 	ErrDuplicateEmail                   = errors.New("a user with this email already exists")
 	ErrDuplicateUsername                = errors.New("a user with this username already exists")
 )
@@ -36,7 +35,8 @@ func (u *userRepository) findBy(ctx context.Context, query string, args ...any) 
 	defer cancel()
 
 	user := new(models.User)
-	if err := u.pool.QueryRow(ctx, query, args...).
+	if err := u.pool.
+		QueryRow(ctx, query, args...).
 		Scan(
 			&user.ID,
 			&user.Name,
@@ -159,9 +159,7 @@ func (u *userRepository) Delete(ctx context.Context, id int) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	sql := `
-		DELETE FROM users WHERE id = $1
-	`
+	sql := `DELETE FROM users WHERE id = $1`
 
 	res, err := u.pool.Exec(ctx, sql, id)
 	if err != nil {

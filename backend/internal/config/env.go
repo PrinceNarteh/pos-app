@@ -29,10 +29,10 @@ func initConfig() *Config {
 			MaxIdleTime:  getEnv("MAX_IDLE_TIME", "10m"),
 		},
 		Jwt: jwtConfig{
-			Secret:           getEnv("JWT_SECRET", ""),
-			ExpiresIn:        getEnvAsInt("JWT_EXPIRES_IN", 100),
-			RefreshSecret:    getEnv("JWT_REFRESH_SECRET", ""),
-			RefreshExpiresIn: getEnvAsInt("JWT_REFRESH_EXPIRES_IN", 3600),
+			AccessSecret:          getEnv("JWT_SECRET", ""),
+			AccessExpirationTime:  getEnv("JWT_EXPIRES_IN", "100s"),
+			RefreshSecret:         getEnv("JWT_REFRESH_SECRET", ""),
+			RefreshExpirationTime: getEnv("JWT_REFRESH_EXPIRES_IN", "3600s"),
 		},
 		File: fileConfig{
 			UploadPath:   getEnv("FILE_UPLOAD_PATH", ""),
