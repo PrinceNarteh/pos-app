@@ -1,6 +1,8 @@
 // Package config provides configuration management for the application.
 package config
 
+import "time"
+
 type Config struct {
 	App  appConfig
 	DB   dbConfig
@@ -9,16 +11,25 @@ type Config struct {
 }
 
 type appConfig struct {
-	Port    string
-	Env     string
-	Version string
+	Port         string
+	Env          string
+	Version      string
+	LogLevel     string
+	ReadTimeout  time.Duration
+	IdleTimeout  time.Duration
+	WriteTimeout time.Duration
 }
 
 type dbConfig struct {
-	URI          string
-	MaxOpenConns int32
-	MinOpenConns int32
-	MaxIdleTime  string
+	Host            string
+	Port            string
+	User            string
+	Password        string
+	Name            string
+	SSLMode         string
+	MaxIdleConns    int
+	MaxOpenConn     int
+	MaxConnLifetime time.Duration
 }
 
 type fileConfig struct {

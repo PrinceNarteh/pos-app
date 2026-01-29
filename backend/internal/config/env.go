@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -18,15 +19,24 @@ func initConfig() *Config {
 
 	return &Config{
 		App: appConfig{
-			Port:    fmt.Sprintf(":%s", getEnv("APP_PORT", "3000")),
-			Env:     getEnv("APP_ENV", "development"),
-			Version: getEnv("APP_VERSION", "1.0.0"),
+			Env:          getEnv("APP_ENV", "development"),
+			Version:      getEnv("APP_VERSION", "1.0.0"),
+			Port:         fmt.Sprintf(":%s", getEnv("APP_PORT", "3000")),
+			ReadTimeout:  getEnvAsDuration("READ_TIMEOUT", 10*time.Second),
+			WriteTimeout: getEnvAsDuration("WRITE_TIMEOUT", 10*time.Second),
+			IdleTimeout:  getEnvAsDuration("IDLE_TIMEOUT", 60*time.Second),
+			LogLevel:     getEnv("LOG_LEVEL", "info"),
 		},
 		DB: dbConfig{
-			URI:          getEnv("DB_URI", ""),
-			MaxOpenConns: int32(getEnvAsInt("DB_MAX_OPEN_CONNS", 10)),
-			MinOpenConns: int32(getEnvAsInt("DB_MAX_IDLE_CONNS", 10)),
-			MaxIdleTime:  getEnv("MAX_IDLE_TIME", "10m"),
+			Host:            getEnv("DB_HOST", "localhost"),
+			Port:            getEnv("DB_PORT", "5432"),
+			User:            getEnv("DB_USER", "postgres"),
+			Password:        getEnv("DB_PASSWORD", "postgres"),
+			Name:            getEnv("DB_NAME", "pos-app"),
+			SSLMode:         getEnv("DB_SSL_MODE", "disable"),
+			MaxIdleConns:    getEnvAsInt("MAX_IDLE_CONNS", 10),
+			MaxOpenConn:     getEnvAsInt("MAX_OPEN_CONNS", 100),
+			MaxConnLifetime: getEnvAsDuration("MAX_CONN_LIFETIME", time.Hour),
 		},
 		Jwt: jwtConfig{
 			AccessSecret:          getEnv("JWT_SECRET", ""),
@@ -51,15 +61,18 @@ func getEnv(key, fallback string) string {
 }
 
 func getEnvAsInt(key string, fallback int) int {
-	valueStr := getEnv(key, "0")
+	valueStr := getEnv(key, "")
 
-	if valueStr == "" {
-		return fallback
+	if value, err := strconv.Atoi(valueStr); err == nil {
+		return value
 	}
+	return fallback
+}
 
-	value, err := strconv.Atoi(valueStr)
-	if err != nil {
-		return fallback
+func getEnvAsDuration(key string, fallback time.Duration) time.Duration {
+	valueStr := getEnv(key, "")
+	if value, err := time.ParseDuration(valueStr); err == nil {
+		return value
 	}
-	return value
+	return fallback
 }
