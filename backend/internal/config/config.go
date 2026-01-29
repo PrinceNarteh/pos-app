@@ -28,7 +28,7 @@ type dbConfig struct {
 	Name            string
 	SSLMode         string
 	MaxIdleConns    int
-	MaxOpenConn     int
+	MaxOpenConns    int
 	MaxConnLifetime time.Duration
 }
 

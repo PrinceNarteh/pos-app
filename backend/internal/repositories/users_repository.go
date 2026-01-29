@@ -2,13 +2,12 @@ package repositories
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/models"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"gorm.io/gorm"
 )
 
 var (
@@ -27,58 +26,22 @@ type UserRepository interface {
 }
 
 type userRepository struct {
-	pool *pgxpool.Pool
-}
-
-func (u *userRepository) findBy(ctx context.Context, query string, args ...any) (*models.User, error) {
-	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
-	defer cancel()
-
-	user := new(models.User)
-	if err := u.pool.
-		QueryRow(ctx, query, args...).
-		Scan(
-			&user.ID,
-			&user.Name,
-			&user.Username,
-			&user.Email,
-			&user.Password,
-			&user.Role,
-		); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
-		}
-		return nil, err
-	}
-
-	return user, nil
+	db *gorm.DB
 }
 
 func (u *userRepository) FindByID(ctx context.Context, id int) (*models.User, error) {
-	sql := `
-		SELECT id, name, username, email, password, role
-		FROM users
-		WHERE id = $1
-	`
-	return u.findBy(ctx, sql, id)
+	user, err := gorm.G[models.User](u.db).Where("id = $1", id).First(ctx)
+	return &user, err
 }
 
 func (u *userRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	sql := `
-		SELECT id, name, username, email, password, role
-		FROM users
-		WHERE email = $1
-	`
-	return u.findBy(ctx, sql, email)
+	user, err := gorm.G[models.User](u.db).Where("email = $1", email).First(ctx)
+	return &user, err
 }
 
 func (u *userRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
-	sql := `
-		SELECT id, name, username, email, password, role
-		FROM users
-		WHERE username = $1
-	`
-	return u.findBy(ctx, sql, username)
+	user, err := gorm.G[models.User](u.db).Where("username = $1", username).First(ctx)
+	return &user, err
 }
 
 func (u *userRepository) FindAll(ctx context.Context) ([]models.User, error) {

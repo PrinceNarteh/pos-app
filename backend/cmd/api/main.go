@@ -11,15 +11,20 @@ import (
 )
 
 func main() {
-	app := createServer()
-
-	connPool, err := db.InitDB()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer connPool.Close()
 
-	repo := repositories.NewRepo(connPool)
+	db, err := db.InitDB(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	app := createServer(cfg)
+
+	repo := repositories.NewRepo(db)
 	svc := services.NewServices(repo)
 	handlers := handlers.NewHandlers(svc)
 	api := app.Group("/api")

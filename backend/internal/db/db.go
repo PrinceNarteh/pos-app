@@ -3,33 +3,87 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/PrinceNarteh/pos/internal/config"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
-func InitDB() (*pgxpool.Pool, error) {
-	db, err := pgxpool.New(context.Background(), config.Env.DB.URI)
-	if err != nil {
-		return nil, err
+type Database struct {
+	DB *gorm.DB
+}
+
+func InitDB(cfg *config.Config) (*Database, error) {
+	dsn := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Name, cfg.DB.SSLMode)
+
+	// Configure GORM logger based on environment
+	gormLogger := logger.Default
+	if cfg.App.Env == "production" {
+		gormLogger = logger.New(log.New(log.Writer(), "\r\n", log.LstdFlags),
+			logger.Config{
+				SlowThreshold:             200 * time.Millisecond,
+				LogLevel:                  logger.Warn,
+				IgnoreRecordNotFoundError: true,
+				Colorful:                  false,
+			},
+		)
 	}
 
-	maxIdleTime, err := time.ParseDuration(config.Env.DB.MaxIdleTime)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger:                                   gormLogger,
+		PrepareStmt:                              true,
+		DisableForeignKeyConstraintWhenMigrating: false,
+		SkipDefaultTransaction:                   true,
+	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	db.Config().MaxConns = config.Env.DB.MaxOpenConns
-	db.Config().MinConns = config.Env.DB.MinOpenConns
-	db.Config().MaxConnIdleTime = maxIdleTime
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sql.DB: %w", err)
+	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	// set connection pool settings
+	sqlDB.SetMaxIdleConns(cfg.DB.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(cfg.DB.MaxOpenConns)
+	sqlDB.SetConnMaxLifetime(cfg.DB.MaxConnLifetime)
+
+	// Test connection
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	if err := db.Ping(ctx); err != nil {
-		return nil, err
+	if err := sqlDB.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	return db, nil
+	return &Database{DB: db}, nil
+}
+
+// Close closes the database connection
+func (d *Database) Close() error {
+	sqlDB, err := d.DB.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Close()
+}
+
+// HealthCheck verifies database connection
+func (d *Database) HealthCheck() error {
+	sqlDB, err := d.DB.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.Ping()
+}
+
+// WithTransaction executes a function within a transaction
+func (d *Database) WithTransaction(fn func(tx *gorm.DB) error) error {
+	return d.DB.Transaction(fn)
 }

@@ -7,11 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func createServer() *fiber.App {
+func createServer(cfg *config.Config) *fiber.App {
 	app := fiber.New(fiber.Config{
-		AppName:      fmt.Sprintf("POS System API - %s", config.Env.App.Version),
+		AppName:      fmt.Sprintf("POS System API - %s", cfg.App.Version),
 		ServerHeader: "POS-System-Server",
-		BodyLimit:    config.Env.File.MaxSize,
+		BodyLimit:    cfg.File.MaxSize,
 	})
 
 	// app.Use(cors.New(cors.Config{
