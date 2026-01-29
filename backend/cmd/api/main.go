@@ -24,11 +24,11 @@ func main() {
 
 	app := createServer(cfg)
 
-	repo := repositories.NewRepo(db)
+	repo := repositories.NewRepo(db.DB)
 	svc := services.NewServices(repo)
 	handlers := handlers.NewHandlers(svc)
 	api := app.Group("/api")
 	NewRoutes(handlers).initRoutes(api)
 
-	log.Fatal(app.Listen(config.Env.App.Port))
+	log.Fatal(app.Listen(cfg.App.Port))
 }

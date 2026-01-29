@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"gorm.io/gorm"
 )
 
 var (
@@ -17,8 +17,8 @@ type Repositories struct {
 	User UserRepository
 }
 
-func NewRepo(connPool *pgxpool.Pool) *Repositories {
+func NewRepo(db *gorm.DB) *Repositories {
 	return &Repositories{
-		User: &userRepository{pool: connPool},
+		User: &userRepository{db: db},
 	}
 }
