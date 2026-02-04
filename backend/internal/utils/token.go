@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/PrinceNarteh/pos/internal/config"
@@ -26,7 +25,7 @@ func generateToken(secret, expTime string, user *models.User) (string, error) {
 
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   strconv.Itoa(user.ID),
+			Subject:   fmt.Sprintf("%d", user.ID),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},
@@ -43,18 +42,18 @@ func generateToken(secret, expTime string, user *models.User) (string, error) {
 }
 
 func GenerateAccessToken(user *models.User) (string, error) {
-	return generateToken(config.Env.Jwt.AccessSecret, config.Env.Jwt.AccessExpirationTime, user)
+	return generateToken(config.Envs.Jwt.AccessSecret, config.Envs.Jwt.AccessExpirationTime, user)
 }
 
 func GenerateRefreshToken(user *models.User) (string, error) {
-	return generateToken(config.Env.Jwt.RefreshSecret, config.Env.Jwt.RefreshExpirationTime, user)
+	return generateToken(config.Envs.Jwt.RefreshSecret, config.Envs.Jwt.RefreshExpirationTime, user)
 }
 
 func ParseToken(tokenStr string, isAccessToken bool) (*Claims, error) {
 	claims := new(Claims)
-	secret := config.Env.Jwt.RefreshSecret
+	secret := config.Envs.Jwt.RefreshSecret
 	if isAccessToken {
-		secret = config.Env.Jwt.AccessSecret
+		secret = config.Envs.Jwt.AccessSecret
 	}
 
 	token, err := jwt.ParseWithClaims(

@@ -6,14 +6,14 @@ import (
 )
 
 type Cart struct {
-	ID          int     `json:"id"`
-	ProductID   int     `json:"productId"`
+	ID          uint    `json:"id"`
+	ProductID   uint    `json:"productId"`
 	ProductName string  `json:"productName"`
 	Price       float64 `json:"price"`
 	Qty         int     `json:"qty"`
 	TotalPrice  float64 `json:"totalPrice"`
 	Note        string  `json:"note"`
-	UserID      int     `json:"userId"`
+	UserID      uint    `json:"userId"`
 }
 
 type CreateCartDTO struct {
@@ -21,8 +21,8 @@ type CreateCartDTO struct {
 	Price     float64 `json:"price"`
 	Qty       int     `json:"qty"`
 	Note      string  `json:"note"`
-	ProductID int     `json:"productId"`
-	UserID    int     `json:"userId"`
+	ProductID uint    `json:"productId"`
+	UserID    uint    `json:"userId"`
 }
 
 func (c CreateCartDTO) Validate() error {

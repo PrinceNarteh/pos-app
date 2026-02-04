@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	ID           int                        `json:"id"`
+	ID           uint                       `json:"id"`
 	Name         string                     `json:"name"`
 	Username     string                     `json:"username"`
 	Email        string                     `json:"email"`
@@ -13,12 +13,7 @@ type User struct {
 	OrderReturns NullableSlice[OrderReturn] `json:"orderReturns"`
 }
 
-type UserResponse struct {
-	ID       int    `json:"id"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"-"`
-	Role     string `json:"role"`
-	Token    string `json:"token"`
+type UserWithToken struct {
+	User  *User  `json:"user"`
+	Token string `json:"token"`
 }

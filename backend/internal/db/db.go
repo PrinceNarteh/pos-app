@@ -17,7 +17,9 @@ type Database struct {
 	DB *gorm.DB
 }
 
-func InitDB(cfg *config.Config) (*Database, error) {
+func InitDB() (*Database, error) {
+	cfg := config.Envs
+
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		cfg.DB.Host, cfg.DB.Port, cfg.DB.User, cfg.DB.Password, cfg.DB.Name, cfg.DB.SSLMode)

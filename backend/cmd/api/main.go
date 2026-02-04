@@ -11,18 +11,13 @@ import (
 )
 
 func main() {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db, err := db.InitDB(cfg)
+	db, err := db.InitDB()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
-	app := createServer(cfg)
+	app := createServer()
 
 	repo := repositories.NewRepo(db.DB)
 	svc := services.NewServices(repo)
@@ -30,5 +25,5 @@ func main() {
 	api := app.Group("/api")
 	NewRoutes(handlers).initRoutes(api)
 
-	log.Fatal(app.Listen(cfg.App.Port))
+	log.Fatal(app.Listen(config.Envs.App.Port))
 }

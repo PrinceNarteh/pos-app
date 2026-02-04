@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -9,12 +10,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func LoadConfig() (*Config, error) {
+var Envs = initConfig()
+
+func initConfig() *Config {
 	if err := godotenv.Load(); err != nil {
-		return nil, fmt.Errorf("could not load .env file")
+		log.Fatal("could not load .env file")
 	}
 
-	cfg := &Config{
+	return &Config{
 		App: appConfig{
 			Env:          getEnv("APP_ENV", "development"),
 			Version:      getEnv("APP_VERSION", "1.0.0"),
@@ -31,9 +34,9 @@ func LoadConfig() (*Config, error) {
 			Password:        getEnv("DB_PASSWORD", "postgres"),
 			Name:            getEnv("DB_NAME", "pos-app"),
 			SSLMode:         getEnv("DB_SSL_MODE", "disable"),
-			MaxIdleConns:    getEnvAsInt("MAX_IDLE_CONNS", 10),
-			MaxOpenConns:    getEnvAsInt("MAX_OPEN_CONNS", 100),
-			MaxConnLifetime: getEnvAsDuration("MAX_CONN_LIFETIME", time.Hour),
+			MaxIdleConns:    getEnvAsInt("DB_MAX_IDLE_CONNS", 10),
+			MaxOpenConns:    getEnvAsInt("DB_MAX_OPEN_CONNS", 100),
+			MaxConnLifetime: getEnvAsDuration("DB_MAX_CONN_LIFETIME", time.Hour),
 		},
 		Jwt: jwtConfig{
 			AccessSecret:          getEnv("JWT_SECRET", ""),
@@ -48,8 +51,6 @@ func LoadConfig() (*Config, error) {
 			AllowedFiles: getEnv("FILE_ALLOWED_TYPES", ""),
 		},
 	}
-
-	return cfg, nil
 }
 
 func getEnv(key, fallback string) string {
