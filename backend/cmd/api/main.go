@@ -17,6 +17,10 @@ func main() {
 	}
 	defer db.Close()
 
+	if err := db.HealthCheck(); err != nil {
+		log.Fatal(err)
+	}
+
 	app := createServer()
 
 	repo := repositories.NewRepo(db.DB)

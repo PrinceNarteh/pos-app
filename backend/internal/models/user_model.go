@@ -1,16 +1,19 @@
 package models
 
+import "gorm.io/gorm"
+
 type User struct {
-	ID           uint                       `json:"id"`
-	Name         string                     `json:"name"`
-	Username     string                     `json:"username"`
-	Email        string                     `json:"email"`
-	Password     string                     `json:"-"`
-	Role         string                     `json:"role"`
-	Carts        NullableSlice[Cart]        `json:"carts"`
-	Orders       NullableSlice[Order]       `json:"orders"`
-	Purchases    NullableSlice[Purchase]    `json:"purchases"`
-	OrderReturns NullableSlice[OrderReturn] `json:"orderReturns"`
+	gorm.Model
+	FirstName    string                     `gorm:"size:255;not null" json:"firstName"`
+	LastName     string                     `gorm:"size:255;not null" json:"lastName"`
+	Username     string                     `gorm:"size:100;not null" json:"username"`
+	Email        string                     `gorm:"size:255;not null;unique" json:"email"`
+	Password     string                     `gorm:"size:255;not null" json:"-"`
+	Role         string                     `gorm:"size:6;not null" json:"role"`
+	Carts        NullableSlice[Cart]        `gorm:"foreignKey:UserID" json:"carts"`
+	Orders       NullableSlice[Order]       `gorm:"foreignKey:UserID" json:"orders"`
+	Purchases    NullableSlice[Purchase]    `gorm:"foreignKey:UserID" json:"purchases"`
+	OrderReturns NullableSlice[OrderReturn] `gorm:"foreignKey:UserID" json:"orderReturns"`
 }
 
 type UserWithToken struct {

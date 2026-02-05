@@ -57,13 +57,6 @@ func InitDB() (*Database, error) {
 	sqlDB.SetMaxOpenConns(cfg.DB.MaxOpenConns)
 	sqlDB.SetConnMaxLifetime(cfg.DB.MaxConnLifetime)
 
-	// Test connection
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := sqlDB.PingContext(ctx); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
-	}
-
 	return &Database{DB: db}, nil
 }
 
@@ -80,9 +73,17 @@ func (d *Database) Close() error {
 func (d *Database) HealthCheck() error {
 	sqlDB, err := d.DB.DB()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get database instance: %w", err)
 	}
-	return sqlDB.Ping()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := sqlDB.PingContext(ctx); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	return nil
 }
 
 // WithTransaction executes a function within a transaction

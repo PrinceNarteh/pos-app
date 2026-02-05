@@ -1,29 +1,26 @@
 package models
 
 import (
-	"time"
-
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"gorm.io/gorm"
 )
 
 type Product struct {
-	ID                 int                              `json:"id"`
+	gorm.Model
 	Code               string                           `json:"code"`
 	BarCode            string                           `json:"barCode"`
 	Name               string                           `json:"name"`
 	Image              string                           `json:"image"`
 	URL                string                           `json:"url"`
-	Qty                int                              `json:"qty"`
 	Price              float64                          `json:"price"`
+	Qty                int                              `json:"qty"`
 	CategoryID         int                              `json:"categoryId"`
 	SupplierID         int                              `json:"supplierId"`
 	Carts              NullableSlice[Cart]              `json:"carts"`
 	OrderDetails       NullableSlice[OrderDetail]       `json:"orderDetails"`
-	OrderReturnDetails NullableSlice[OrderReturnDetail] `json:"orderReturnDetails"`
 	PurchaseDetails    NullableSlice[PurchaseDetail]    `json:"purchaseDetails"`
-	CreatedAt          time.Time                        `json:"createdAt"`
-	UpdatedAt          time.Time                        `json:"updatedAt"`
+	OrderReturnDetails NullableSlice[OrderReturnDetail] `json:"orderReturnDetails"`
 }
 
 type CreateProductDTO struct {
