@@ -15,7 +15,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	if err := db.HealthCheck(); err != nil {
 		log.Fatal(err)

@@ -1,6 +1,9 @@
 include .env
 MIGRATION_DIR=./cmd/migrations/
 
+.PHONY: dev
+dev:
+	@air
 
 .PHONY: create-migration
 create-migration:
@@ -15,3 +18,11 @@ migration-up:
 .PHONY: migration-down
 migration-down:
 	goose down
+
+.PHONY: migration-reset
+migration-clean:
+	@goose to 0
+
+.PHONY: migration-clean
+migration-clean: migration-reset migration-up
+	@echo "Database cleaned successfully"

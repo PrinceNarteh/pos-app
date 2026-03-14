@@ -18,18 +18,20 @@ func (l LoginDTO) Validate() error {
 }
 
 type RegisterUserDTO struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Role      string `json:"role"`
 }
 
 func (r RegisterUserDTO) Validate() error {
 	return validation.ValidateStruct(&r,
-		validation.Field(&r.Name, validation.Required, validation.Length(3, 0)),
+		validation.Field(&r.FirstName, validation.Required, validation.Length(3, 0)),
+		validation.Field(&r.LastName, validation.Required, validation.Length(3, 0)),
 		validation.Field(&r.Username, validation.Required, validation.Length(3, 0)),
 		validation.Field(&r.Email, validation.Required, is.Email),
 		validation.Field(&r.Password, validation.Required, validation.Length(6, 0)),
-		validation.Field(&r.Role, validation.Required, validation.In("admin", "customer")))
+		validation.Field(&r.Role, validation.Required, validation.In("admin", "customer").Error("invalid role. must be either 'admin' or 'customer'")))
 }

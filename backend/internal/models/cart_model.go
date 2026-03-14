@@ -3,17 +3,18 @@ package models
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"gorm.io/gorm"
 )
 
 type Cart struct {
-	ID          uint    `json:"id"`
-	ProductID   uint    `json:"productId"`
+	gorm.Model
 	ProductName string  `json:"productName"`
-	Price       float64 `json:"price"`
 	Qty         int     `json:"qty"`
-	TotalPrice  float64 `json:"totalPrice"`
-	Note        string  `json:"note"`
-	UserID      uint    `json:"userId"`
+	Price       float64 `json:"price"`
+	TotalPrice  float64 `gorm:"" json:"totalPrice"`
+	Note        string  `gorm:"type:text" json:"note"`
+	ProductID   uint    `gorm:"not null;index" json:"productId"`
+	UserID      uint    `gorm:"not null;index" json:"userId"`
 }
 
 type CreateCartDTO struct {

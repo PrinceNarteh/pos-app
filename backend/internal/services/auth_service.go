@@ -32,17 +32,17 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 	if err == nil {
 		user, err = s.repo.User.FindByEmail(ctx, loginDTO.UsernameOrEmail)
 		if err != nil {
-			return nil, fmt.Errorf(errMsg)
+			return nil, errors.New(errMsg)
 		}
 	} else {
 		user, err = s.repo.User.FindByUsername(ctx, loginDTO.UsernameOrEmail)
 		if err != nil {
-			return nil, fmt.Errorf(errMsg)
+			return nil, errors.New(errMsg)
 		}
 	}
 
 	if !utils.CompareHashAndPassword(loginDTO.Password, user.Password) {
-		return nil, fmt.Errorf(errMsg)
+		return nil, errors.New(errMsg)
 	}
 
 	token, err := utils.GenerateAccessToken(user)
@@ -61,7 +61,7 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserWithToken, error) {
 	emailExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, err
+		return nil, errors.New("here")
 	}
 	if emailExists != nil {
 		return nil, fmt.Errorf("user with email %q exists", registerDTO.Email)
@@ -82,11 +82,12 @@ func (s *authService) Register(ctx context.Context, registerDTO *models.Register
 
 	registerDTO.Password = hashedPassword
 	user := models.User{
-		Email:    registerDTO.Email,
-		Username: registerDTO.Username,
-		Name:     registerDTO.Name,
-		Password: registerDTO.Password,
-		Role:     "user",
+		Email:     registerDTO.Email,
+		FirstName: registerDTO.FirstName,
+		LastName:  registerDTO.LastName,
+		Username:  registerDTO.Username,
+		Password:  registerDTO.Password,
+		Role:      "user",
 	}
 	err = s.repo.User.Create(ctx, &user)
 	if err != nil {

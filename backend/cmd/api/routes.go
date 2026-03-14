@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/PrinceNarteh/pos/internal/handlers"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type routes struct {

@@ -5,39 +5,39 @@ import (
 
 	"github.com/PrinceNarteh/pos/internal/models"
 	"github.com/PrinceNarteh/pos/internal/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 var _ AuthHandler = (*authHandler)(nil)
 
 type AuthHandler interface {
-	Login(*fiber.Ctx) error
-	Register(*fiber.Ctx) error
+	Login(fiber.Ctx) error
+	Register(fiber.Ctx) error
 }
 
 type authHandler struct {
 	svc *services.Services
 }
 
-func (h *authHandler) Login(c *fiber.Ctx) error {
+func (h *authHandler) Login(c fiber.Ctx) error {
 	reqBody := new(models.LoginDTO)
-	if err := c.BodyParser(reqBody); err != nil {
-		c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
-		})
+	if err := c.Bind().Body(reqBody); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, "request body missing"),
+		)
 	}
 
 	if err := reqBody.Validate(); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err,
-		})
+		return c.Status(http.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, err),
+		)
 	}
 
 	userResponse, err := h.svc.Auth.Login(c.Context(), reqBody)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return c.Status(http.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, err.Error()),
+		)
 	}
 
 	return c.JSON(fiber.Map{
@@ -45,25 +45,25 @@ func (h *authHandler) Login(c *fiber.Ctx) error {
 	})
 }
 
-func (h *authHandler) Register(c *fiber.Ctx) error {
+func (h *authHandler) Register(c fiber.Ctx) error {
 	registerDTO := new(models.RegisterUserDTO)
-	if err := c.BodyParser(registerDTO); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+	if err := c.Bind().Body(registerDTO); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, err.Error()),
+		)
 	}
 
 	if err := registerDTO.Validate(); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return c.Status(http.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, err.Error()),
+		)
 	}
 
 	userResponse, err := h.svc.Auth.Register(c.Context(), registerDTO)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		return c.Status(http.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, err.Error()),
+		)
 	}
 
 	return c.JSON(fiber.Map{

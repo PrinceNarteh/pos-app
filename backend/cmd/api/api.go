@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/config"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 func createServer() *fiber.App {

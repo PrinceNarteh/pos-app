@@ -6,24 +6,19 @@ import (
 
 	"github.com/PrinceNarteh/pos/internal/repositories"
 	"github.com/PrinceNarteh/pos/internal/services"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 type UserHandler interface {
-	FindByID(*fiber.Ctx) error
+	FindByID(fiber.Ctx) error
 }
 
 type userHandler struct {
 	svc *services.Services
 }
 
-func (h *userHandler) FindByID(c *fiber.Ctx) error {
-	id, err := c.ParamsInt("id", 0)
-	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(
-			ErrResponse(http.StatusBadRequest, "invalid user id"),
-		)
-	}
+func (h *userHandler) FindByID(c fiber.Ctx) error {
+	id := fiber.Params(c, "id", 0)
 
 	user, err := h.svc.User.FindByID(c.Context(), id)
 	if err != nil {

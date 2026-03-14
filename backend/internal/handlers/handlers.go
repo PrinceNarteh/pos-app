@@ -22,7 +22,7 @@ type Response struct {
 	Data       any    `json:"data,omitempty"`
 }
 
-func SuccessResponse(statusCode int, data interface{}) Response {
+func SuccessResponse(statusCode int, data any) Response {
 	return Response{
 		Status:     "success",
 		StatusCode: statusCode,
@@ -30,10 +30,10 @@ func SuccessResponse(statusCode int, data interface{}) Response {
 	}
 }
 
-func ErrResponse(statusCode int, message string) Response {
+func ErrResponse(statusCode int, err any) Response {
 	return Response{
 		Status:     "error",
 		StatusCode: statusCode,
-		Message:    message,
+		Message:    err,
 	}
 }
