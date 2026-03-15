@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS orders (
     total INT NOT NULL,
     ppn INT NOT NULL,
     grand_total INT NOT NULL,
-    user_id INT NOT NULL,
+    user_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     

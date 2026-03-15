@@ -21,8 +21,8 @@ migration-down:
 
 .PHONY: migration-reset
 migration-reset:
-	@goose down to 0
+	@goose down-to 0
 
 .PHONY: migration-clean
 migration-clean: migration-reset migration-up
-	@echo "Database cleaned successfully"
+	@echo "Dat-base cleaned successfully"

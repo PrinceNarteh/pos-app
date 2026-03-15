@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS products (
   url TEXT,
   qty INT NOT NULL,
   price DECIMAL(10,2) NOT NULL,
-  category_id INT NOT NULL,
-  supplier_id INT NOT NULL,
+  category_id UUID NOT NULL,
+  supplier_id UUID NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

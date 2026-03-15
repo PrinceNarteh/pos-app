@@ -2,13 +2,13 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS carts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id INT NOT NULL,
+    product_id UUID NOT NULL,
     procude_name VARCHAR(255) NOT NULL,
     qty INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     note TEXT,
-    user_id INT NOT NULL,
+    user_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
