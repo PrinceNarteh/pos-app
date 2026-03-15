@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -35,16 +36,38 @@ func (u *userRepository) usersTbl() gorm.Interface[models.User] {
 
 func (u *userRepository) FindByID(ctx context.Context, id int) (*models.User, error) {
 	user, err := u.usersTbl().Where("id = $1", id).First(ctx)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, sql.ErrNoRows
+		default:
+			return nil, err
+		}
+	}
 	return &user, err
 }
 
 func (u *userRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
 	user, err := u.usersTbl().Where("email = $1", email).First(ctx)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, sql.ErrNoRows
+		default:
+			return nil, err
+		}
+	}
 	return &user, err
 }
 
 func (u *userRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
 	user, err := u.usersTbl().Where("username = $1", username).First(ctx)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, sql.ErrNoRows
+		}
+		return nil, err
+	}
 	return &user, err
 }
 

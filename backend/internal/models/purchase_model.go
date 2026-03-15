@@ -7,7 +7,7 @@ import (
 )
 
 type Purchase struct {
-	ID         int       `json:"id"`
+	Base
 	Code       string    `json:"code"`
 	Note       string    `json:"note"`
 	Total      int64     `json:"total"`

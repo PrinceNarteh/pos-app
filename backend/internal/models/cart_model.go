@@ -3,11 +3,10 @@ package models
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"gorm.io/gorm"
 )
 
 type Cart struct {
-	gorm.Model
+	Base
 	ProductName string  `json:"productName"`
 	Qty         int     `json:"qty"`
 	Price       float64 `json:"price"`

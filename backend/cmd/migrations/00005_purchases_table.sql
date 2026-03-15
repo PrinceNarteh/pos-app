@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS purchases (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code VARCHAR(255) NOT NULL,
   note TEXT,
   total DECIMAL(10,2) NOT NULL,
@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS purchases (
   grand_total DECIMAL(10, 2) NOT NULL,
   user_id INT NOT NULL,
   date TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
   CONSTRAINT fk_purchases_user 
     FOREIGN KEY(user_id) 

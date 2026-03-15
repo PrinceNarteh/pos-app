@@ -8,7 +8,7 @@ import (
 )
 
 type Supplier struct {
-	ID        int       `json:"id"`
+	Base
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
 	Phone     string    `json:"phone"`

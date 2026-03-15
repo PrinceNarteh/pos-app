@@ -3,11 +3,10 @@ package models
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"gorm.io/gorm"
 )
 
 type Product struct {
-	gorm.Model
+	Base
 	Code               string              `json:"code"`
 	BarCode            string              `json:"barCode"`
 	Name               string              `json:"name"`

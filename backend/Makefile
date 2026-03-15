@@ -20,8 +20,8 @@ migration-down:
 	goose down
 
 .PHONY: migration-reset
-migration-clean:
-	@goose to 0
+migration-reset:
+	@goose down to 0
 
 .PHONY: migration-clean
 migration-clean: migration-reset migration-up

@@ -61,7 +61,7 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserWithToken, error) {
 	emailExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, errors.New("here")
+		return nil, err
 	}
 	if emailExists != nil {
 		return nil, fmt.Errorf("user with email %q exists", registerDTO.Email)
@@ -69,7 +69,7 @@ func (s *authService) Register(ctx context.Context, registerDTO *models.Register
 
 	usernameExists, err := s.repo.User.FindByUsername(ctx, registerDTO.Email)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, err
+		return nil, errors.New("second here")
 	}
 	if usernameExists != nil {
 		return nil, fmt.Errorf("user with username %q exists", registerDTO.Email)

@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS carts (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id INT NOT NULL,
     procude_name VARCHAR(255) NOT NULL,
     qty INT NOT NULL,

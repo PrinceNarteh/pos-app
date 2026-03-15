@@ -7,7 +7,7 @@ import (
 )
 
 type Order struct {
-	ID           int           `json:"id"`
+	Base
 	Code         string        `json:"code"`
 	Total        int64         `json:"total"`
 	PPN          int64         `json:"ppn"`
