@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -11,6 +10,7 @@ import (
 	"github.com/PrinceNarteh/pos/internal/utils"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"gorm.io/gorm"
 )
 
 var _ AuthService = (*authService)(nil)
@@ -60,7 +60,7 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 
 func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserWithToken, error) {
 	emailExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
 	if emailExists != nil {
@@ -68,8 +68,8 @@ func (s *authService) Register(ctx context.Context, registerDTO *models.Register
 	}
 
 	usernameExists, err := s.repo.User.FindByUsername(ctx, registerDTO.Email)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return nil, errors.New("second here")
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
 	}
 	if usernameExists != nil {
 		return nil, fmt.Errorf("user with username %q exists", registerDTO.Email)

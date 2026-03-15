@@ -4,6 +4,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation"
+	"gorm.io/gorm"
 )
 
 type Order struct {
@@ -15,6 +16,16 @@ type Order struct {
 	UserID       int           `json:"userId"`
 	OrderDetails []OrderDetail `json:"orderDetails"`
 	OrderReturns []OrderReturn `json:"orderReturns"`
+}
+
+func (o *Order) AfterFind(tx *gorm.DB) (err error) {
+	if o.OrderDetails == nil {
+		o.OrderDetails = []OrderDetail{}
+	}
+	if o.OrderReturns == nil {
+		o.OrderReturns = []OrderReturn{}
+	}
+	return
 }
 
 func (o Order) Validate() error {

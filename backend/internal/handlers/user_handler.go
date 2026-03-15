@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/PrinceNarteh/pos/internal/repositories"
 	"github.com/PrinceNarteh/pos/internal/services"
 	"github.com/gofiber/fiber/v3"
+	"gorm.io/gorm"
 )
 
 type UserHandler interface {
@@ -18,11 +18,11 @@ type userHandler struct {
 }
 
 func (h *userHandler) FindByID(c fiber.Ctx) error {
-	id := fiber.Params(c, "id", 0)
+	id := fiber.Params(c, "id", "")
 
 	user, err := h.svc.User.FindByID(c.Context(), id)
 	if err != nil {
-		if errors.Is(err, repositories.ErrNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.Status(http.StatusNotFound).JSON(
 				ErrResponse(http.StatusNotFound, "user not found"),
 			)

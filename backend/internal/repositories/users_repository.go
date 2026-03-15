@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -19,7 +18,7 @@ var (
 
 type UserRepository interface {
 	FindAll(context.Context) ([]models.User, error)
-	FindByID(context.Context, int) (*models.User, error)
+	FindByID(context.Context, string) (*models.User, error)
 	FindByEmail(context.Context, string) (*models.User, error)
 	FindByUsername(context.Context, string) (*models.User, error)
 	Create(context.Context, *models.User) error
@@ -34,41 +33,32 @@ func (u *userRepository) usersTbl() gorm.Interface[models.User] {
 	return gorm.G[models.User](u.db)
 }
 
-func (u *userRepository) FindByID(ctx context.Context, id int) (*models.User, error) {
-	user, err := u.usersTbl().Where("id = $1", id).First(ctx)
+func (u *userRepository) findBy(ctx context.Context, query, value string) (*models.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
+	defer cancel()
+
+	user, err := u.usersTbl().Where(query, value).First(ctx)
 	if err != nil {
 		switch err {
-		case sql.ErrNoRows:
-			return nil, sql.ErrNoRows
+		case gorm.ErrRecordNotFound:
+			return nil, gorm.ErrRecordNotFound
 		default:
 			return nil, err
 		}
 	}
 	return &user, err
+}
+
+func (u *userRepository) FindByID(ctx context.Context, id string) (*models.User, error) {
+	return u.findBy(ctx, "id = $1", id)
 }
 
 func (u *userRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	user, err := u.usersTbl().Where("email = $1", email).First(ctx)
-	if err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			return nil, sql.ErrNoRows
-		default:
-			return nil, err
-		}
-	}
-	return &user, err
+	return u.findBy(ctx, "email = $1", email)
 }
 
 func (u *userRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
-	user, err := u.usersTbl().Where("username = $1", username).First(ctx)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, sql.ErrNoRows
-		}
-		return nil, err
-	}
-	return &user, err
+	return u.findBy(ctx, "username = $1", username)
 }
 
 func (u *userRepository) FindAll(ctx context.Context) ([]models.User, error) {

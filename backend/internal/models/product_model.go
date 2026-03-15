@@ -3,6 +3,7 @@ package models
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"gorm.io/gorm"
 )
 
 type Product struct {
@@ -20,6 +21,22 @@ type Product struct {
 	OrderDetails       []OrderDetail       `json:"orderDetails"`
 	PurchaseDetails    []PurchaseDetail    `json:"purchaseDetails"`
 	OrderReturnDetails []OrderReturnDetail `json:"orderReturnDetails"`
+}
+
+func (p *Product) AfterFind(tx *gorm.DB) (err error) {
+	if p.Carts == nil {
+		p.Carts = []Cart{}
+	}
+	if p.PurchaseDetails == nil {
+		p.PurchaseDetails = []PurchaseDetail{}
+	}
+	if p.OrderDetails == nil {
+		p.OrderDetails = []OrderDetail{}
+	}
+	if p.OrderReturnDetails == nil {
+		p.OrderReturnDetails = []OrderReturnDetail{}
+	}
+	return
 }
 
 type CreateProductDTO struct {
