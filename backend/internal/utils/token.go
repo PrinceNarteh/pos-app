@@ -25,7 +25,7 @@ func generateToken(secret, expTime string, user *models.User) (string, error) {
 
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			Subject:   fmt.Sprintf("%d", user.ID),
+			Subject:   user.ID.String(),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(exp),
 		},

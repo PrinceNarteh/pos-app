@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/PrinceNarteh/pos/internal/handlers"
+	"github.com/PrinceNarteh/pos/internal/middleware"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -16,10 +17,13 @@ func NewRoutes(handlers *handlers.Handlers) *routes {
 }
 
 func (r *routes) initRoutes(app fiber.Router) {
+	// auth
 	auth := app.Group("/auth")
 	auth.Post("/login", r.Handlers.Auth.Login)
 	auth.Post("/register", r.Handlers.Auth.Register)
 
+	app.Use(middleware.AuthMiddleware())
+	// users
 	user := app.Group("/users")
 	user.Get("/:id", r.Handlers.User.FindByID)
 }
