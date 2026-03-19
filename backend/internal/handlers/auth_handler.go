@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/PrinceNarteh/pos/internal/models"
+	"github.com/PrinceNarteh/pos/internal/dto"
 	"github.com/PrinceNarteh/pos/internal/services"
 	"github.com/gofiber/fiber/v3"
 )
@@ -20,7 +20,7 @@ type authHandler struct {
 }
 
 func (h *authHandler) Login(c fiber.Ctx) error {
-	reqBody := new(models.LoginDTO)
+	reqBody := new(dto.LoginDTO)
 	if err := c.Bind().Body(reqBody); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			ErrResponse(fiber.StatusBadRequest, "request body missing"),
@@ -46,7 +46,7 @@ func (h *authHandler) Login(c fiber.Ctx) error {
 }
 
 func (h *authHandler) Register(c fiber.Ctx) error {
-	registerDTO := new(models.RegisterUserDTO)
+	registerDTO := new(dto.RegisterUserDTO)
 	if err := c.Bind().Body(registerDTO); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(
 			ErrResponse(fiber.StatusBadRequest, err.Error()),

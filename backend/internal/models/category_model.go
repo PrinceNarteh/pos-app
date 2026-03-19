@@ -2,7 +2,6 @@
 package models
 
 import (
-	validation "github.com/go-ozzo/ozzo-validation"
 	"gorm.io/gorm"
 )
 
@@ -17,14 +16,4 @@ func (c *Category) AfterFind(tx *gorm.DB) (err error) {
 		c.Products = []Product{}
 	}
 	return
-}
-
-type CreateCategoryDTO struct {
-	Name string `json:"name" validate:"required"`
-}
-
-func (c CreateCategoryDTO) Validate() error {
-	return validation.ValidateStruct(&c,
-		validation.Field(&c.Name, validation.Required, validation.Length(1, 100)),
-	)
 }
