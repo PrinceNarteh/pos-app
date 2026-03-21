@@ -4,14 +4,16 @@ package handlers
 import "github.com/PrinceNarteh/pos/internal/services"
 
 type Handlers struct {
-	Auth AuthHandler
-	User UserHandler
+	Auth     AuthHandler
+	User     UserHandler
+	Category CategoryHandler
 }
 
 func NewHandlers(svc *services.Services) *Handlers {
 	return &Handlers{
-		Auth: &authHandler{svc: svc},
-		User: &userHandler{svc: svc},
+		Auth:     &authHandler{svc: svc},
+		User:     &userHandler{svc: svc},
+		Category: &categoryHandler{svc: svc},
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/PrinceNarteh/pos/internal/dto"
 	"github.com/PrinceNarteh/pos/internal/models"
 	"github.com/PrinceNarteh/pos/internal/repositories"
 	"github.com/PrinceNarteh/pos/internal/utils"
@@ -16,15 +17,15 @@ import (
 var _ AuthService = (*authService)(nil)
 
 type AuthService interface {
-	Login(context.Context, *models.LoginDTO) (*models.UserWithToken, error)
-	Register(context.Context, *models.RegisterUserDTO) (*models.UserWithToken, error)
+	Login(context.Context, *dto.LoginDTO) (*models.UserWithToken, error)
+	Register(context.Context, *dto.RegisterUserDTO) (*models.UserWithToken, error)
 }
 
 type authService struct {
 	repo *repositories.Repositories
 }
 
-func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*models.UserWithToken, error) {
+func (s *authService) Login(ctx context.Context, loginDTO *dto.LoginDTO) (*models.UserWithToken, error) {
 	user := new(models.User)
 	const errMsg = "invalid email/username or password"
 
@@ -58,7 +59,7 @@ func (s *authService) Login(ctx context.Context, loginDTO *models.LoginDTO) (*mo
 	return userResponse, nil
 }
 
-func (s *authService) Register(ctx context.Context, registerDTO *models.RegisterUserDTO) (*models.UserWithToken, error) {
+func (s *authService) Register(ctx context.Context, registerDTO *dto.RegisterUserDTO) (*models.UserWithToken, error) {
 	emailExists, err := s.repo.User.FindByEmail(ctx, registerDTO.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err

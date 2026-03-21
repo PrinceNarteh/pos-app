@@ -14,11 +14,13 @@ var (
 )
 
 type Repositories struct {
-	User UserRepository
+	User     UserRepository
+	Category CategoryRepository
 }
 
 func NewRepo(db *gorm.DB) *Repositories {
 	return &Repositories{
-		User: &userRepository{db: db},
+		User:     &userRepository{db: db},
+		Category: &categoryRepository{db: db},
 	}
 }

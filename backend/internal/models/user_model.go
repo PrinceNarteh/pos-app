@@ -3,17 +3,8 @@ package models
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-)
-
-type Role string
-
-const (
-	RoleAdmin Role = "admin"
-	RoleUser  Role = "user"
-	RoleGuest Role = "guest"
 )
 
 type User struct {
@@ -23,7 +14,7 @@ type User struct {
 	Username     string         `gorm:"size:100;not null" json:"username"`
 	Email        string         `gorm:"size:255;not null;unique" json:"email"`
 	Password     string         `gorm:"size:255;not null" json:"-"`
-	Role         Role           `gorm:"size:6;not null" json:"role"`
+	Role         string         `gorm:"size:6;not null" json:"role"`
 	IsActive     bool           `gorm:"default:true" json:"isActive"`
 	RefreshToken string         `gorm:"type:text" json:"-"`
 	Carts        []Cart         `gorm:"foreignKey:UserID" json:"carts"`
@@ -35,15 +26,15 @@ type User struct {
 }
 
 type UserProfileResponse struct {
-	ID        uuid.UUID `json:"id"`
-	FirstName string    `json:"firstName"`
-	LastName  string    `json:"lastName"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"`
-	Role      Role      `json:"role"`
-	IsActive  bool      `json:"isActive"`
-	CreatedAt time.Time `json:"createdAt"`
+	Base
+	FirstName string         `json:"firstName"`
+	LastName  string         `json:"lastName"`
+	Username  string         `json:"username"`
+	Email     string         `json:"email"`
+	Password  string         `json:"-"`
+	Role      string         `json:"role"`
+	IsActive  bool           `json:"isActive"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
 }
 
 type UserDetailResponse struct {
@@ -91,23 +82,40 @@ type UserWithToken struct {
 
 func (u *User) ToUserProfileResponse() UserProfileResponse {
 	return UserProfileResponse{
-		ID:        u.Base.ID,
+		Base: Base{
+			ID:        u.Base.ID,
+			CreatedAt: u.Base.CreatedAt,
+			UpdatedAt: u.Base.UpdatedAt,
+		},
 		FirstName: u.FirstName,
 		LastName:  u.LastName,
 		Username:  u.Username,
 		Email:     u.Email,
 		Role:      u.Role,
 		IsActive:  u.IsActive,
-		CreatedAt: u.Base.CreatedAt,
+		DeletedAt: u.DeletedAt,
 	}
 }
 
 func (u *User) UserDetailResponse() UserDetailResponse {
-	return UserDetailResponse {
-	UserProfileResponse
-	Carts        []Cart        `json:"carts"`
-	Orders       []Order       `json:"orders"`
-	Purchases    []Purchase    `json:"purchases"`
-	OrderReturns []OrderReturn `json:"orderReturns"`
+	return UserDetailResponse{
+		UserProfileResponse: UserProfileResponse{
+			Base: Base{
+				ID:        u.Base.ID,
+				CreatedAt: u.Base.CreatedAt,
+				UpdatedAt: u.Base.UpdatedAt,
+			},
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
+			Username:  u.Username,
+			Email:     u.Email,
+			Role:      u.Role,
+			IsActive:  u.IsActive,
+			DeletedAt: u.DeletedAt,
+		},
+		Carts:        u.Carts,
+		OrderReturns: u.OrderReturns,
+		Orders:       u.Orders,
+		Purchases:    u.Purchases,
 	}
 }
