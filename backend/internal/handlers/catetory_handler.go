@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/PrinceNarteh/pos/internal/dto"
+	"github.com/PrinceNarteh/pos/internal/repositories"
 	"github.com/PrinceNarteh/pos/internal/services"
 	"github.com/gofiber/fiber/v3"
 	"gorm.io/gorm"
@@ -68,6 +69,11 @@ func (h *categoryHandler) CreateCategory(c fiber.Ctx) error {
 
 	category, err := h.svc.Category.Create(c.Context(), categoryDTO)
 	if err != nil {
+		if errors.Is(err, repositories.ErrDuplicateName) {
+			return c.Status(fiber.StatusConflict).JSON(
+				ErrResponse(fiber.StatusConflict, repositories.ErrDuplicateName.Error()),
+			)
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			ErrResponse(fiber.StatusInternalServerError, `internal server error`),
 		)

@@ -2,13 +2,19 @@ package repositories
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/models"
+	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
-var _ CategoryRepository = (*categoryRepository)(nil)
+var (
+	_                CategoryRepository = (*categoryRepository)(nil)
+	ErrDuplicateName                    = errors.New("category name already exists")
+)
 
 type CategoryRepository interface {
 	FindAll(ctx context.Context) ([]models.Category, error)
@@ -61,16 +67,16 @@ func (r *categoryRepository) Create(ctx context.Context, category *models.Catego
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
 	defer cancel()
 
-	err := r.categoryTbl().Create(ctx, category)
-	if err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return gorm.ErrRecordNotFound
-		default:
-			return err
-
+	if err := r.categoryTbl().Create(ctx, category); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" && pgErr.ConstraintName == "categories_name_key" {
+				return ErrDuplicateName
+			}
 		}
+		return fmt.Errorf("error creating category: %w", err)
 	}
+
 	return nil
 }
 
