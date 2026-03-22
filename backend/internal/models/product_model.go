@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -13,8 +14,8 @@ type Product struct {
 	URL                string              `json:"url"`
 	Price              float64             `json:"price"`
 	Qty                int                 `json:"qty"`
-	CategoryID         int                 `json:"categoryId"`
-	SupplierID         int                 `json:"supplierId"`
+	CategoryID         uuid.UUID           `json:"categoryId"`
+	SupplierID         uuid.UUID           `json:"supplierId"`
 	Carts              []Cart              `json:"carts"`
 	OrderDetails       []OrderDetail       `json:"orderDetails"`
 	PurchaseDetails    []PurchaseDetail    `json:"purchaseDetails"`

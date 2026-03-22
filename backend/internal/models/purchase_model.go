@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Purchase struct {
@@ -11,7 +13,7 @@ type Purchase struct {
 	Total      int64     `json:"total"`
 	PPN        int64     `json:"ppn"`
 	GrandTotal int64     `json:"grandTotal"`
-	UserID     int       `json:"userId"`
+	UserID     uuid.UUID `json:"userId"`
 	Date       time.Time `json:"date"`
 }
 

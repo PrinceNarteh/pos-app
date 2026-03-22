@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +13,7 @@ type Order struct {
 	Total        int64         `json:"total"`
 	PPN          int64         `json:"ppn"`
 	GrandTotal   int64         `json:"grandTotal"`
-	UserID       int           `json:"userId"`
+	UserID       uuid.UUID     `json:"userId"`
 	OrderDetails []OrderDetail `json:"orderDetails"`
 	OrderReturns []OrderReturn `json:"orderReturns"`
 }
