@@ -3,27 +3,9 @@ package dto
 import (
 	"regexp"
 
-	"github.com/PrinceNarteh/pos/internal/models"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"gorm.io/gorm"
 )
-
-type Supplier struct {
-	FirstName string           `json:"firstName"`
-	LastName  string           `json:"lastName"`
-	Phone     string           `json:"phone"`
-	Email     string           `json:"email"`
-	Address   string           `json:"address"`
-	Products  []models.Product `json:"products"`
-}
-
-func (s *Supplier) AfterFind(tx *gorm.DB) (err error) {
-	if s.Products == nil {
-		s.Products = []models.Product{}
-	}
-	return
-}
 
 type CreateSupplierDTO struct {
 	FirstName string `json:"firstName"`
