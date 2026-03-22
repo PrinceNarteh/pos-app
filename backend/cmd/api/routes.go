@@ -27,5 +27,9 @@ func (r *routes) initRoutes(app fiber.Router) {
 
 	// categories
 	categories := app.Group("/categories")
-	categories.Get("/", r.Handlers.Category.FindAll)
+	categories.Get("/", r.Handlers.Category.FindAllCategories)
+	categories.Post("/", r.Handlers.Category.CreateCategory)
+	categories.Get("/:id", r.Handlers.Category.FindCategoryByID)
+	categories.Patch("/:id", r.Handlers.Category.UpdateCategory)
+	categories.Delete("/:id", r.Handlers.Category.DeleteCategory)
 }

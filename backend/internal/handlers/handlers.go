@@ -1,7 +1,11 @@
 // Package handlers
 package handlers
 
-import "github.com/PrinceNarteh/pos/internal/services"
+import (
+	"github.com/PrinceNarteh/pos/internal/services"
+)
+
+const ErrRequestBodyNotFound = `request body not found`
 
 type Handlers struct {
 	Auth     AuthHandler
