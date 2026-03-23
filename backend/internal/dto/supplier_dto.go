@@ -24,3 +24,19 @@ func (s CreateSupplierDTO) Validate() error {
 		validation.Field(&s.Address, validation.Required, validation.Length(5, 100)),
 	)
 }
+
+type UpdateSupplierDTO struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Phone     string `json:"phone"`
+	Address   string `json:"address"`
+}
+
+func (s UpdateSupplierDTO) Validate() error {
+	return validation.ValidateStruct(&s,
+		validation.Field(&s.FirstName, validation.Length(1, 50)),
+		validation.Field(&s.LastName, validation.Length(1, 50)),
+		validation.Field(&s.Phone, validation.Match(regexp.MustCompile(`^+d{1,3}d{9,10}$`))),
+		validation.Field(&s.Address, validation.Length(5, 100)),
+	)
+}
