@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/PrinceNarteh/pos/internal/dto"
 	"github.com/PrinceNarteh/pos/internal/repositories"
@@ -55,7 +56,7 @@ func (h *categoryHandler) FindCategoryByID(c fiber.Ctx) error {
 }
 
 func (h *categoryHandler) CreateCategory(c fiber.Ctx) error {
-	categoryDTO := new(dto.CategoryDTO)
+	categoryDTO := new(dto.CreateCategoryDTO)
 	if err := c.Bind().Body(categoryDTO); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			ErrResponse(fiber.StatusBadRequest, ErrRequestBodyNotFound),
@@ -67,11 +68,18 @@ func (h *categoryHandler) CreateCategory(c fiber.Ctx) error {
 		)
 	}
 
+	fmt.Println(categoryDTO)
+
 	category, err := h.svc.Category.Create(c.Context(), categoryDTO)
 	if err != nil {
-		if errors.Is(err, repositories.ErrDuplicateName) {
+		if errors.Is(err, repositories.ErrDuplicateCategoryName) {
 			return c.Status(fiber.StatusConflict).JSON(
-				ErrResponse(fiber.StatusConflict, repositories.ErrDuplicateName.Error()),
+				ErrResponse(fiber.StatusConflict, repositories.ErrDuplicateCategoryName.Error()),
+			)
+		}
+		if errors.Is(err, repositories.ErrDuplicateCategoryCode) {
+			return c.Status(fiber.StatusConflict).JSON(
+				ErrResponse(fiber.StatusConflict, repositories.ErrDuplicateCategoryCode.Error()),
 			)
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(
@@ -85,18 +93,23 @@ func (h *categoryHandler) CreateCategory(c fiber.Ctx) error {
 
 func (h *categoryHandler) UpdateCategory(c fiber.Ctx) error {
 	id := c.Params("id", "")
-	categoryDTO := new(dto.CategoryDTO)
-	if err := c.Bind().Body(categoryDTO); err != nil {
+	updateDTO := new(dto.UpdateCategoryDTO)
+	if err := c.Bind().Body(updateDTO); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			ErrResponse(fiber.StatusBadRequest, ErrRequestBodyNotFound),
 		)
 	}
-	if err := categoryDTO.Validate(); err != nil {
+	if err := updateDTO.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(
 			ErrResponse(fiber.StatusBadRequest, err),
 		)
 	}
-	category, err := h.svc.Category.Update(c.Context(), id, categoryDTO)
+	if updateDTO.Name == "" && updateDTO.Code == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			ErrResponse(fiber.StatusBadRequest, "both name and update cannot be empty"),
+		)
+	}
+	category, err := h.svc.Category.Update(c.Context(), id, updateDTO)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(
 			ErrResponse(fiber.StatusInternalServerError, err.Error()),

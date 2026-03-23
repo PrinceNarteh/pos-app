@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"strings"
 
 	"github.com/PrinceNarteh/pos/internal/dto"
 	"github.com/PrinceNarteh/pos/internal/models"
@@ -14,8 +15,8 @@ type CategoryService interface {
 	FindAll(ctx context.Context) ([]models.Category, error)
 	FindByID(ctx context.Context, categoryID string) (*models.Category, error)
 	FindByName(ctx context.Context, name string) (*models.Category, error)
-	Create(ctx context.Context, data *dto.CategoryDTO) (*models.Category, error)
-	Update(ctx context.Context, categoryID string, data *dto.CategoryDTO) (*models.Category, error)
+	Create(ctx context.Context, data *dto.CreateCategoryDTO) (*models.Category, error)
+	Update(ctx context.Context, categoryID string, data *dto.UpdateCategoryDTO) (*models.Category, error)
 	Delete(ctx context.Context, categoryID string) error
 }
 
@@ -35,9 +36,10 @@ func (s *categoryService) FindByName(ctx context.Context, name string) (*models.
 	return s.repo.Category.FindByName(ctx, name)
 }
 
-func (s *categoryService) Create(ctx context.Context, data *dto.CategoryDTO) (*models.Category, error) {
+func (s *categoryService) Create(ctx context.Context, data *dto.CreateCategoryDTO) (*models.Category, error) {
 	category := models.Category{
 		Name: data.Name,
+		Code: strings.ToUpper(data.Code),
 	}
 	if err := s.repo.Category.Create(ctx, &category); err != nil {
 		return nil, err
@@ -45,7 +47,7 @@ func (s *categoryService) Create(ctx context.Context, data *dto.CategoryDTO) (*m
 	return &category, nil
 }
 
-func (s *categoryService) Update(ctx context.Context, categoryID string, data *dto.CategoryDTO) (*models.Category, error) {
+func (s *categoryService) Update(ctx context.Context, categoryID string, data *dto.UpdateCategoryDTO) (*models.Category, error) {
 	return s.repo.Category.Update(ctx, categoryID, data.Name)
 }
 

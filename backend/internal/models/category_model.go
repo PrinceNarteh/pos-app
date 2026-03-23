@@ -8,6 +8,7 @@ import (
 type Category struct {
 	Base
 	Name     string    `json:"name"`
+	Code     string    `json:"code"`
 	Products []Product `json:"products"`
 }
 

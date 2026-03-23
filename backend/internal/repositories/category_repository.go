@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	_                CategoryRepository = (*categoryRepository)(nil)
-	ErrDuplicateName                    = errors.New("category name already exists")
+	_                        CategoryRepository = (*categoryRepository)(nil)
+	ErrDuplicateCategoryName                    = errors.New("category name already exists")
+	ErrDuplicateCategoryCode                    = errors.New("category code already exists")
 )
 
 type CategoryRepository interface {
@@ -70,8 +71,13 @@ func (r *categoryRepository) Create(ctx context.Context, category *models.Catego
 	if err := r.categoryTbl().Create(ctx, category); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
-			if pgErr.Code == "23505" && pgErr.ConstraintName == "categories_name_key" {
-				return ErrDuplicateName
+			if pgErr.Code == "23505" {
+				if pgErr.ConstraintName == "categories_name_key" {
+					return ErrDuplicateCategoryName
+				}
+				if pgErr.ConstraintName == "categories_code_key" {
+					return ErrDuplicateCategoryCode
+				}
 			}
 		}
 		return fmt.Errorf("error creating category: %w", err)
