@@ -15,7 +15,7 @@ type CartRepository interface {
 	FindAll(ctx context.Context) ([]models.Cart, error)
 	FindByID(ctx context.Context, cartID string) (*models.Cart, error)
 	Create(ctx context.Context, data *models.Cart) error
-	Update(ctx context.Context, update *dto.UpdateCartDTO) (*models.Cart, error)
+	Update(ctx context.Context, cartID string, updates *dto.UpdateCartDTO) (*models.Cart, error)
 	Delete(ctx context.Context, cardID string) error
 }
 

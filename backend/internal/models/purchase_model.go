@@ -19,10 +19,10 @@ type Purchase struct {
 
 type PurchaseDetail struct {
 	Base
-	ProductID   int     `json:"productId"`
-	ProductName string  `json:"productName"`
-	Price       float64 `json:"price"`
-	Qty         int     `json:"qty"`
-	TotalPrice  float64 `json:"totalPrice"`
-	PurchaseID  int     `json:"purchaseId"`
+	ProductID   int       `json:"productId"`
+	ProductName string    `json:"productName"`
+	Price       float64   `json:"price"`
+	Qty         int       `json:"qty"`
+	TotalPrice  float64   `json:"totalPrice"`
+	PurchaseID  uuid.UUID `json:"purchaseId"`
 }

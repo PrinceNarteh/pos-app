@@ -30,31 +30,31 @@ func (o *Order) AfterFind(tx *gorm.DB) (err error) {
 
 type OrderDetail struct {
 	Base
-	ProductName string  `json:"productName"`
-	Price       float64 `json:"price"`
-	Qty         int     `json:"qty"`
-	TotalPrice  float64 `json:"totalPrice"`
-	Note        string  `json:"note"`
-	ProductID   int     `json:"productId"`
-	OrderID     int     `json:"orderId"`
+	ProductName string    `json:"productName"`
+	Price       float64   `json:"price"`
+	Qty         int       `json:"qty"`
+	TotalPrice  float64   `json:"totalPrice"`
+	Note        string    `json:"note"`
+	ProductID   uuid.UUID `json:"productId"`
+	OrderID     uuid.UUID `json:"orderId"`
 }
 
 type OrderReturn struct {
 	Base
 	Code               string              `json:"code"`
 	Note               string              `json:"note"`
-	OrderID            int                 `json:"orderId"`
-	UserID             int                 `json:"userId"`
+	OrderID            uuid.UUID           `json:"orderId"`
+	UserID             uuid.UUID           `json:"userId"`
 	Date               time.Time           `json:"date"`
 	OrderReturnDetails []OrderReturnDetail `json:"orderReturnDetails"`
 }
 
 type OrderReturnDetail struct {
 	Base
-	ProductID     int     `json:"productId"`
-	ProductName   string  `json:"productName"`
-	Price         float64 `json:"price"`
-	Qty           int     `json:"qty"`
-	TotalPrice    float64 `json:"totalPrice"`
-	OrderReturnID int     `json:"orderReturnId"`
+	ProductID     int       `json:"productId"`
+	ProductName   string    `json:"productName"`
+	Price         float64   `json:"price"`
+	Qty           int       `json:"qty"`
+	TotalPrice    float64   `json:"totalPrice"`
+	OrderReturnID uuid.UUID `json:"orderReturnId"`
 }
